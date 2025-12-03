@@ -369,6 +369,43 @@ export default function DocumentationPage() {
                 </TabsContent>
               </Tabs>
             </section>
+
+            <Separator />
+
+            <section>
+              <h2 className="text-2xl font-semibold mb-4">Assignment Guidelines</h2>
+              <Card>
+                <CardContent className="p-6 space-y-6">
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="text-lg font-semibold mb-2">1. System Modeling & Design</h3>
+                      <p className="text-muted-foreground">
+                        Select the system that you would like to model. Create a UML diagram and a flow chart describing your system. 
+                        Build out the environment using Object-Oriented programming paradigm. The elements in the system should be 
+                        visually represented (graphics can be symbolic) and should be able to affect each other through a system of 
+                        relationships.
+                      </p>
+                    </div>
+                    
+                    <div>
+                      <h3 className="text-lg font-semibold mb-2">2. User Interaction & Emerging Properties</h3>
+                      <p className="text-muted-foreground">
+                        Add the ability to change this system through user input. Use direct or indirect user control - or both. 
+                        If you can, find a way to embed emerging properties in the system.
+                      </p>
+                    </div>
+                    
+                    <div>
+                      <h3 className="text-lg font-semibold mb-2">3. Documentation & Presentation</h3>
+                      <p className="text-muted-foreground">
+                        Create a webpage and describe your intent and your process. Embed your diagrams and the resulting P5js 
+                        sketch from openProcessing or P5js to the webpage.
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </section>
           </CardContent>
         </Card>
       </div>
