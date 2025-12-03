@@ -150,4 +150,3 @@ export function P5Canvas({ ecosystem }: P5CanvasProps) {
     </div>
   );
 }
-

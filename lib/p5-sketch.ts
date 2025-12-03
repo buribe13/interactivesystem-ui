@@ -1,4 +1,4 @@
-import p5 from 'p5';
+import type p5 from 'p5';
 import { Ecosystem } from './ecosystem/Ecosystem';
 import { Article } from './ecosystem/Article';
 import { Author } from './ecosystem/Author';
