@@ -3,11 +3,13 @@
 import React, { useState, useEffect } from 'react';
 import { Ecosystem } from '@/lib/ecosystem/Ecosystem';
 import { Button } from './ui/Button';
-import { Card } from './ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/Card';
 import { Input } from './ui/Input';
-import { Select } from './ui/Select';
+import { Label } from './ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/Select';
 import { Slider } from './ui/Slider';
 import { Badge } from './ui/Badge';
+import { Separator } from './ui/separator';
 
 interface ControlsProps {
   ecosystem: Ecosystem | null;
@@ -19,7 +21,7 @@ export function Controls({ ecosystem, onReset }: ControlsProps) {
   const [author, setAuthor] = useState('');
   const [category, setCategory] = useState('');
   const [tags, setTags] = useState('');
-  const [speed, setSpeed] = useState(1.0);
+  const [speed, setSpeed] = useState([1.0]);
   const [stats, setStats] = useState({
     totalArticles: 0,
     totalAuthors: 0,
@@ -42,7 +44,7 @@ export function Controls({ ecosystem, onReset }: ControlsProps) {
 
   useEffect(() => {
     if (ecosystem) {
-      ecosystem.setUpdateSpeed(speed);
+      ecosystem.setUpdateSpeed(speed[0]);
     }
   }, [speed, ecosystem]);
 
@@ -99,113 +101,145 @@ export function Controls({ ecosystem, onReset }: ControlsProps) {
 
   return (
     <div className="space-y-4">
-      <Card title="Publish Article">
-        <form onSubmit={handlePublish} className="space-y-3">
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Title</label>
-            <Input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Article title"
-              required
-            />
-          </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Publish Article</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handlePublish} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="title">Title</Label>
+              <Input
+                id="title"
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Article title"
+                required
+              />
+            </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Author</label>
-            <Select value={author} onChange={(e) => setAuthor(e.target.value)} required>
-              <option value="">Select author</option>
-              {ecosystem.authors.map((a) => (
-                <option key={a.id} value={a.name}>
-                  {a.name}
-                </option>
-              ))}
-            </Select>
-          </div>
+            <div className="space-y-2">
+              <Label htmlFor="author">Author</Label>
+              <Select value={author} onValueChange={setAuthor} required>
+                <SelectTrigger id="author">
+                  <SelectValue placeholder="Select author" />
+                </SelectTrigger>
+                <SelectContent>
+                  {ecosystem.authors.map((a) => (
+                    <SelectItem key={a.id} value={a.name}>
+                      {a.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Category</label>
-            <Select value={category} onChange={(e) => setCategory(e.target.value)} required>
-              <option value="">Select category</option>
-              {ecosystem.categories.map((c) => (
-                <option key={c.id} value={c.name}>
-                  {c.name}
-                </option>
-              ))}
-            </Select>
-          </div>
+            <div className="space-y-2">
+              <Label htmlFor="category">Category</Label>
+              <Select value={category} onValueChange={setCategory} required>
+                <SelectTrigger id="category">
+                  <SelectValue placeholder="Select category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {ecosystem.categories.map((c) => (
+                    <SelectItem key={c.id} value={c.name}>
+                      {c.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Tags (comma-separated)</label>
-            <Input
-              type="text"
-              value={tags}
-              onChange={(e) => setTags(e.target.value)}
-              placeholder="UX, Design, Tech"
-            />
-          </div>
+            <div className="space-y-2">
+              <Label htmlFor="tags">Tags (comma-separated)</Label>
+              <Input
+                id="tags"
+                type="text"
+                value={tags}
+                onChange={(e) => setTags(e.target.value)}
+                placeholder="UX, Design, Tech"
+              />
+            </div>
 
-          <div className="flex gap-2">
-            <Button type="submit" className="flex-1">
-              Publish
-            </Button>
-            <Button type="button" variant="secondary" onClick={handleRandomArticle}>
-              Random
-            </Button>
-          </div>
-        </form>
+            <div className="flex gap-2">
+              <Button type="submit" className="flex-1">
+                Publish
+              </Button>
+              <Button type="button" variant="secondary" onClick={handleRandomArticle}>
+                Random
+              </Button>
+            </div>
+          </form>
+        </CardContent>
       </Card>
 
-      <Card title="Simulation Controls">
-        <div className="space-y-4">
-          <Slider
-            label="Speed"
-            type="range"
-            min="0.5"
-            max="3"
-            step="0.1"
-            value={speed}
-            onChange={(e) => setSpeed(parseFloat(e.target.value))}
-          />
+      <Card>
+        <CardHeader>
+          <CardTitle>Simulation Controls</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <div className="flex justify-between items-center">
+              <Label htmlFor="speed">Speed</Label>
+              <span className="text-sm text-muted-foreground">{speed[0].toFixed(1)}x</span>
+            </div>
+            <Slider
+              id="speed"
+              min={0.5}
+              max={3}
+              step={0.1}
+              value={speed}
+              onValueChange={setSpeed}
+            />
+          </div>
 
-          <Button variant="danger" onClick={onReset} className="w-full">
+          <Separator />
+
+          <Button variant="destructive" onClick={onReset} className="w-full">
             Reset Ecosystem
           </Button>
-        </div>
+        </CardContent>
       </Card>
 
-      <Card title="Statistics">
-        <div className="space-y-2">
-          <div className="flex justify-between items-center">
-            <span className="text-gray-400">Articles</span>
-            <Badge variant="info">{stats.totalArticles}</Badge>
+      <Card>
+        <CardHeader>
+          <CardTitle>Statistics</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-muted-foreground">Articles</span>
+              <Badge variant="info">{stats.totalArticles}</Badge>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-muted-foreground">Authors</span>
+              <Badge variant="info">{stats.totalAuthors}</Badge>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-muted-foreground">Readers</span>
+              <Badge variant="info">{stats.totalReaders}</Badge>
+            </div>
+            <Separator />
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-muted-foreground">Total Views</span>
+              <Badge variant="success">{stats.totalViews}</Badge>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-muted-foreground">Total Likes</span>
+              <Badge variant="success">{stats.totalLikes}</Badge>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-muted-foreground">Total Shares</span>
+              <Badge variant="success">{stats.totalShares}</Badge>
+            </div>
+            <Separator />
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-muted-foreground">Trending</span>
+              <Badge variant="warning">{stats.trendingCount}</Badge>
+            </div>
           </div>
-          <div className="flex justify-between items-center">
-            <span className="text-gray-400">Authors</span>
-            <Badge variant="info">{stats.totalAuthors}</Badge>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-gray-400">Readers</span>
-            <Badge variant="info">{stats.totalReaders}</Badge>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-gray-400">Total Views</span>
-            <Badge variant="success">{stats.totalViews}</Badge>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-gray-400">Total Likes</span>
-            <Badge variant="success">{stats.totalLikes}</Badge>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-gray-400">Total Shares</span>
-            <Badge variant="success">{stats.totalShares}</Badge>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-gray-400">Trending</span>
-            <Badge variant="warning">{stats.trendingCount}</Badge>
-          </div>
-        </div>
+        </CardContent>
       </Card>
     </div>
   );

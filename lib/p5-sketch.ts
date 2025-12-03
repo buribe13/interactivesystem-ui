@@ -29,11 +29,22 @@ export function createP5Sketch(ecosystem: Ecosystem) {
   let categoryRegions: { category: Category; x: number; y: number; width: number; height: number }[] = [];
   let p5Instance: p5 | null = null;
 
-  const setup = (p: p5) => {
+  const setup = (p: p5, width?: number, height?: number) => {
+    console.log('p5-sketch setup called', { width, height });
     p5Instance = p;
-    p.createCanvas(1200, 800);
-    p.colorMode(p.HSB, 360, 100, 100, 100);
-    initializeVisuals(p);
+    const canvasWidth = width || 1200;
+    const canvasHeight = height || 800;
+    
+    try {
+      p.createCanvas(canvasWidth, canvasHeight);
+      console.log('Canvas created successfully', { width: canvasWidth, height: canvasHeight });
+      p.colorMode(p.HSB, 360, 100, 100, 100);
+      initializeVisuals(p);
+      console.log('Visuals initialized');
+    } catch (error) {
+      console.error('Error in p5 setup:', error);
+      throw error;
+    }
   };
 
   const initializeVisuals = (p: p5) => {
@@ -97,37 +108,46 @@ export function createP5Sketch(ecosystem: Ecosystem) {
   };
 
   const draw = (p: p5) => {
-    p.background(220, 20, 15); // Dark blue-gray background
+    try {
+      p.background(220, 20, 15); // Dark blue-gray background
 
-    // Update ecosystem
-    ecosystem.tick(p.millis());
+      // Update ecosystem
+      ecosystem.tick(p.millis());
 
-    // Update visuals
-    updateArticleVisuals(p);
+      // Update visuals
+      updateArticleVisuals(p);
 
-    // Draw stats bar
-    drawStatsBar(p);
+      // Draw stats bar
+      drawStatsBar(p);
 
-    // Draw category regions
-    drawCategoryRegions(p);
+      // Draw category regions
+      drawCategoryRegions(p);
 
-    // Draw connections (author-article)
-    drawConnections(p);
+      // Draw connections (author-article)
+      drawConnections(p);
 
-    // Draw articles
-    drawArticles(p);
+      // Draw articles
+      drawArticles(p);
 
-    // Draw authors
-    drawAuthors(p);
+      // Draw authors
+      drawAuthors(p);
 
-    // Draw tooltip
-    if (hoveredArticle) {
-      drawTooltip(p, hoveredArticle);
-    }
+      // Draw tooltip
+      if (hoveredArticle) {
+        drawTooltip(p, hoveredArticle);
+      }
 
-    // Draw selected article info
-    if (selectedArticle) {
-      drawSelectedInfo(p, selectedArticle);
+      // Draw selected article info
+      if (selectedArticle) {
+        drawSelectedInfo(p, selectedArticle);
+      }
+    } catch (error) {
+      console.error('Error in draw function:', error);
+      // Draw error message on canvas
+      p.fill(0, 100, 100);
+      p.textAlign(p.CENTER, p.CENTER);
+      p.textSize(16);
+      p.text('Error rendering canvas', p.width / 2, p.height / 2);
     }
   };
 
@@ -322,10 +342,19 @@ export function createP5Sketch(ecosystem: Ecosystem) {
     });
   };
 
+  const windowResized = (p: p5, width: number, height: number) => {
+    p.resizeCanvas(width, height);
+    // Reinitialize visuals with new dimensions
+    categoryRegions = [];
+    visualAuthors = [];
+    initializeVisuals(p);
+  };
+
   return {
     setup,
     draw,
     mouseMoved,
     mousePressed,
+    windowResized,
   };
 }
