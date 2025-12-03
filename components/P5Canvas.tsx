@@ -25,7 +25,7 @@ export function P5Canvas({ ecosystem }: P5CanvasProps) {
 
   const draw = (p: p5) => {
     if (sketchFunctions) {
-      sketchFunctions(p);
+      sketchFunctions.draw(p);
     }
   };
 
