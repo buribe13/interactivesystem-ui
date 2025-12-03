@@ -1,8 +1,8 @@
-import p5 from 'p5';
-import { Ecosystem } from './ecosystem/Ecosystem';
-import { Article } from './ecosystem/Article';
-import { Author } from './ecosystem/Author';
-import { Category } from './ecosystem/Category';
+import type p5 from "p5";
+import { Ecosystem } from "./ecosystem/Ecosystem";
+import { Article } from "./ecosystem/Article";
+import { Author } from "./ecosystem/Author";
+import { Category } from "./ecosystem/Category";
 
 interface VisualArticle {
   article: Article;
@@ -26,23 +26,32 @@ export function createP5Sketch(ecosystem: Ecosystem) {
   let hoveredArticle: Article | null = null;
   let visualArticles: VisualArticle[] = [];
   let visualAuthors: VisualAuthor[] = [];
-  let categoryRegions: { category: Category; x: number; y: number; width: number; height: number }[] = [];
+  let categoryRegions: {
+    category: Category;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  }[] = [];
   let p5Instance: p5 | null = null;
 
   const setup = (p: p5, width?: number, height?: number) => {
-    console.log('p5-sketch setup called', { width, height });
+    console.log("p5-sketch setup called", { width, height });
     p5Instance = p;
     const canvasWidth = width || 1200;
     const canvasHeight = height || 800;
-    
+
     try {
       p.createCanvas(canvasWidth, canvasHeight);
-      console.log('Canvas created successfully', { width: canvasWidth, height: canvasHeight });
+      console.log("Canvas created successfully", {
+        width: canvasWidth,
+        height: canvasHeight,
+      });
       p.colorMode(p.HSB, 360, 100, 100, 100);
       initializeVisuals(p);
-      console.log('Visuals initialized');
+      console.log("Visuals initialized");
     } catch (error) {
-      console.error('Error in p5 setup:', error);
+      console.error("Error in p5 setup:", error);
       throw error;
     }
   };
@@ -86,25 +95,37 @@ export function createP5Sketch(ecosystem: Ecosystem) {
   };
 
   const updateArticleVisuals = (p: p5) => {
-    visualArticles = ecosystem.articles.map((article) => {
-      const existing = visualArticles.find((va) => va.article.id === article.id);
-      const region = categoryRegions.find((r) => r.category.id === article.category.id);
+    visualArticles = ecosystem.articles
+      .map((article) => {
+        const existing = visualArticles.find(
+          (va) => va.article.id === article.id
+        );
+        const region = categoryRegions.find(
+          (r) => r.category.id === article.category.id
+        );
 
-      if (!region) return null as any;
+        if (!region) return null as any;
 
-      const targetX = region.x + region.width / 2 + (Math.random() - 0.5) * region.width * 0.6;
-      const targetY = region.y + region.height / 2 + (Math.random() - 0.5) * region.height * 0.6;
+        const targetX =
+          region.x +
+          region.width / 2 +
+          (Math.random() - 0.5) * region.width * 0.6;
+        const targetY =
+          region.y +
+          region.height / 2 +
+          (Math.random() - 0.5) * region.height * 0.6;
 
-      return {
-        article,
-        x: existing?.x ?? targetX,
-        y: existing?.y ?? targetY,
-        targetX,
-        targetY,
-        size: Math.max(10, Math.min(50, article.trendingScore / 5)),
-        pulsePhase: existing?.pulsePhase ?? Math.random() * p.TWO_PI,
-      };
-    }).filter(Boolean);
+        return {
+          article,
+          x: existing?.x ?? targetX,
+          y: existing?.y ?? targetY,
+          targetX,
+          targetY,
+          size: Math.max(10, Math.min(50, article.trendingScore / 5)),
+          pulsePhase: existing?.pulsePhase ?? Math.random() * p.TWO_PI,
+        };
+      })
+      .filter(Boolean);
   };
 
   const draw = (p: p5) => {
@@ -142,12 +163,12 @@ export function createP5Sketch(ecosystem: Ecosystem) {
         drawSelectedInfo(p, selectedArticle);
       }
     } catch (error) {
-      console.error('Error in draw function:', error);
+      console.error("Error in draw function:", error);
       // Draw error message on canvas
       p.fill(0, 100, 100);
       p.textAlign(p.CENTER, p.CENTER);
       p.textSize(16);
-      p.text('Error rendering canvas', p.width / 2, p.height / 2);
+      p.text("Error rendering canvas", p.width / 2, p.height / 2);
     }
   };
 
@@ -200,9 +221,13 @@ export function createP5Sketch(ecosystem: Ecosystem) {
 
     // Author-article connections
     visualAuthors.forEach((vAuthor) => {
-      const authorArticles = ecosystem.articles.filter((a) => a.author.id === vAuthor.author.id);
+      const authorArticles = ecosystem.articles.filter(
+        (a) => a.author.id === vAuthor.author.id
+      );
       authorArticles.forEach((article) => {
-        const vArticle = visualArticles.find((va) => va.article.id === article.id);
+        const vArticle = visualArticles.find(
+          (va) => va.article.id === article.id
+        );
         if (vArticle) {
           p.line(vAuthor.x, vAuthor.y, vArticle.x, vArticle.y);
         }
@@ -214,7 +239,9 @@ export function createP5Sketch(ecosystem: Ecosystem) {
       if (vArticle.article.trendingScore > 50) {
         const related = vArticle.article.getRelatedArticles(ecosystem.articles);
         related.slice(0, 2).forEach((relatedArticle) => {
-          const vRelated = visualArticles.find((va) => va.article.id === relatedArticle.id);
+          const vRelated = visualArticles.find(
+            (va) => va.article.id === relatedArticle.id
+          );
           if (vRelated && relatedArticle.trendingScore > 30) {
             p.stroke(200, 50, 60, 30);
             p.line(vArticle.x, vArticle.y, vRelated.x, vRelated.y);
@@ -237,9 +264,18 @@ export function createP5Sketch(ecosystem: Ecosystem) {
       vArticle.pulsePhase += 0.1;
 
       // Calculate color based on engagement
-      const engagement = vArticle.article.views + vArticle.article.likes * 2 + vArticle.article.shares * 3;
+      const engagement =
+        vArticle.article.views +
+        vArticle.article.likes * 2 +
+        vArticle.article.shares * 3;
       const maxEngagement = 1000;
-      const hue = p.map(Math.min(engagement, maxEngagement), 0, maxEngagement, 200, 0); // Blue to red
+      const hue = p.map(
+        Math.min(engagement, maxEngagement),
+        0,
+        maxEngagement,
+        200,
+        0
+      ); // Blue to red
       const saturation = 60 + (vArticle.article.trendingScore > 50 ? 30 : 0);
       const brightness = 70 + (vArticle.article.trendingScore > 50 ? 20 : 0);
 
@@ -256,11 +292,18 @@ export function createP5Sketch(ecosystem: Ecosystem) {
       p.circle(vArticle.x, vArticle.y, size);
 
       // Draw title on hover/select
-      if (hoveredArticle?.id === vArticle.article.id || selectedArticle?.id === vArticle.article.id) {
+      if (
+        hoveredArticle?.id === vArticle.article.id ||
+        selectedArticle?.id === vArticle.article.id
+      ) {
         p.fill(0, 0, 100);
         p.textAlign(p.CENTER, p.BOTTOM);
         p.textSize(10);
-        p.text(vArticle.article.title.substring(0, 30), vArticle.x, vArticle.y - size / 2 - 5);
+        p.text(
+          vArticle.article.title.substring(0, 30),
+          vArticle.x,
+          vArticle.y - size / 2 - 5
+        );
       }
 
       p.pop();
@@ -295,8 +338,16 @@ export function createP5Sketch(ecosystem: Ecosystem) {
     p.textAlign(p.LEFT, p.TOP);
     p.textSize(11);
     p.text(`Title: ${article.title}`, p.mouseX + 15, p.mouseY - 55);
-    p.text(`Views: ${article.views} | Likes: ${article.likes} | Shares: ${article.shares}`, p.mouseX + 15, p.mouseY - 40);
-    p.text(`Trending: ${article.trendingScore.toFixed(1)}`, p.mouseX + 15, p.mouseY - 25);
+    p.text(
+      `Views: ${article.views} | Likes: ${article.likes} | Shares: ${article.shares}`,
+      p.mouseX + 15,
+      p.mouseY - 40
+    );
+    p.text(
+      `Trending: ${article.trendingScore.toFixed(1)}`,
+      p.mouseX + 15,
+      p.mouseY - 25
+    );
     p.text(`Author: ${article.author.name}`, p.mouseX + 15, p.mouseY - 10);
     p.pop();
   };
@@ -310,16 +361,32 @@ export function createP5Sketch(ecosystem: Ecosystem) {
     p.textAlign(p.LEFT, p.TOP);
     p.textSize(12);
     p.textStyle(p.BOLD);
-    p.text('Selected Article', 20, p.height - 140);
+    p.text("Selected Article", 20, p.height - 140);
     p.textStyle(p.NORMAL);
     p.textSize(10);
     p.text(`Title: ${article.title}`, 20, p.height - 125);
     p.text(`Author: ${article.author.name}`, 20, p.height - 110);
     p.text(`Category: ${article.category.name}`, 20, p.height - 95);
-    p.text(`Tags: ${article.tags.map((t) => t.name).join(', ')}`, 20, p.height - 80);
-    p.text(`Views: ${article.views} | Likes: ${article.likes} | Shares: ${article.shares}`, 20, p.height - 65);
-    p.text(`Trending Score: ${article.trendingScore.toFixed(2)}`, 20, p.height - 50);
-    p.text(`Published: ${article.publishDate.toLocaleDateString()}`, 20, p.height - 35);
+    p.text(
+      `Tags: ${article.tags.map((t) => t.name).join(", ")}`,
+      20,
+      p.height - 80
+    );
+    p.text(
+      `Views: ${article.views} | Likes: ${article.likes} | Shares: ${article.shares}`,
+      20,
+      p.height - 65
+    );
+    p.text(
+      `Trending Score: ${article.trendingScore.toFixed(2)}`,
+      20,
+      p.height - 50
+    );
+    p.text(
+      `Published: ${article.publishDate.toLocaleDateString()}`,
+      20,
+      p.height - 35
+    );
     p.pop();
   };
 
@@ -337,7 +404,8 @@ export function createP5Sketch(ecosystem: Ecosystem) {
     visualArticles.forEach((vArticle) => {
       const dist = p.dist(p.mouseX, p.mouseY, vArticle.x, vArticle.y);
       if (dist < vArticle.size / 2) {
-        selectedArticle = selectedArticle?.id === vArticle.article.id ? null : vArticle.article;
+        selectedArticle =
+          selectedArticle?.id === vArticle.article.id ? null : vArticle.article;
       }
     });
   };
