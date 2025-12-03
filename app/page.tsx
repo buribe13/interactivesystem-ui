@@ -1,11 +1,24 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import { Ecosystem } from '@/lib/ecosystem/Ecosystem';
 import { initializeEcosystem } from '@/lib/initEcosystem';
-import { P5Canvas } from '@/components/P5Canvas';
 import { Controls } from '@/components/Controls';
 import Link from 'next/link';
+
+// Dynamically import P5Canvas with SSR disabled to avoid p5.js SSR issues
+const P5Canvas = dynamic(() => import('@/components/P5Canvas').then(mod => ({ default: mod.P5Canvas })), {
+  ssr: false,
+  loading: () => (
+    <div className="flex items-center justify-center h-full bg-gray-900 text-white">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+        <p>Loading canvas...</p>
+      </div>
+    </div>
+  ),
+});
 
 export default function Home() {
   const [ecosystem, setEcosystem] = useState<Ecosystem | null>(null);
